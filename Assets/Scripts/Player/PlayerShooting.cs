@@ -56,12 +56,12 @@ public class PlayerShooting : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        if (timer * 0.1 >= timeBetweenBombs && Time.timeScale != 0)
+        if(ScoreManager.score % 50 == 0 && timer * 0.1 >= timeBetweenBombs && Time.timeScale != 0 && ScoreManager.score != 0)
         {
             grenadeLauncher = true;
         }
 
-        if (timer * 0.3 >= timeBetweenShotGun && Time.timeScale != 0)
+        if (timer * 0.3 >= timeBetweenShotGun && Time.timeScale != 0 && ScoreManager.score != 0 && ScoreManager.score % 20 == 0)
         {
             shotgun = true;
         }
