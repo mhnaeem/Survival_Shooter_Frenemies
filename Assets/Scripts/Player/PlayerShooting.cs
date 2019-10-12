@@ -23,14 +23,14 @@ public class PlayerShooting : MonoBehaviour
     public static bool grenadeLauncher = false;
     float timeBetweenBombs = 0.5f;
     float rangeGrenade = 8f;
-    int damagePerBomb = 30;
+    int damagePerBomb = 50;
     bool grenadeLauncherBeingUsed = false;
 
     //Code for shotgun
     public static bool shotgun = false;
     float timeBetweenShotGun = 0.7f;
     float rangeShotGun = 3f;
-    int damagePerShotGun = 15;
+    int damagePerShotGun = 35;
     bool shotgunBeingUsed = false;
 
 
