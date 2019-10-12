@@ -22,56 +22,58 @@ public class PlayerShooting : MonoBehaviour
     //Code for grenade launcher
     public static bool grenadeLauncher = false;
     float timeBetweenBombs = 0.5f;
-    float rangeGrenade = 20f;
+    float rangeGrenade = 8f;
     int damagePerBomb = 30;
     bool grenadeLauncherBeingUsed = false;
 
     //Code for shotgun
     public static bool shotgun = false;
     float timeBetweenShotGun = 0.7f;
-    float rangeShotGun = 5f;
+    float rangeShotGun = 3f;
     int damagePerShotGun = 15;
     bool shotgunBeingUsed = false;
 
 
     //Code for playing gun particles
     public GameObject explosiveEffects;
+    public GameObject shotgunEffects;
 
 
-    void Awake ()
+    void Awake()
     {
-        shootableMask = LayerMask.GetMask ("Shootable");
-        gunParticles = GetComponent<ParticleSystem> ();
-        gunLine = GetComponent <LineRenderer> ();
-        gunAudio = GetComponent<AudioSource> ();
-        gunLight = GetComponent<Light> ();
+        shootableMask = LayerMask.GetMask("Shootable");
+        gunParticles = GetComponent<ParticleSystem>();
+        gunLine = GetComponent<LineRenderer>();
+        gunAudio = GetComponent<AudioSource>();
+        gunLight = GetComponent<Light>();
 
         explosiveEffects = GameObject.Find("ExplParticle");
+        shotgunEffects = GameObject.Find("ShotgunParticle");
     }
 
 
-    void Update ()
+    void Update()
     {
         timer += Time.deltaTime;
 
-        if(timer * 0.1 >= timeBetweenBombs && Time.timeScale != 0)
+        if (timer * 0.1 >= timeBetweenBombs && Time.timeScale != 0)
         {
             grenadeLauncher = true;
         }
 
-        if(timer * 0.3 >= timeBetweenShotGun && Time.timeScale != 0)
+        if (timer * 0.3 >= timeBetweenShotGun && Time.timeScale != 0)
         {
             shotgun = true;
         }
 
-        if(shotgun && Input.GetButton("Fire3"))
+        if (shotgun && Input.GetButton("Fire3"))
         {
             shotgun = false;
             shotgunBeingUsed = true;
             Shoot();
             shotgunBeingUsed = false;
         }
-        
+
         if (Input.GetButton("Jump") && grenadeLauncher)
         {
             grenadeLauncher = false;
@@ -80,39 +82,28 @@ public class PlayerShooting : MonoBehaviour
             grenadeLauncherBeingUsed = false;
         }
 
-        else if(Input.GetButton ("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)
+        else if (Input.GetButton("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)
         {
             specialWeapon = Input.GetButton("Fire2");
 
-            Shoot ();
+            Shoot();
         }
 
         if (timer >= timeBetweenBullets * effectsDisplayTime)
         {
-            DisableEffects ();
+            DisableEffects();
         }
     }
 
 
-    public void DisableEffects ()
+    public void DisableEffects()
     {
         gunLine.enabled = false;
         gunLight.enabled = false;
     }
 
-    void Shoot()
+    void changeGunLineColour()
     {
-        timer = 0f;
-
-        gunAudio.Play();
-
-        gunLight.enabled = true;
-
-        gunParticles.Stop();
-        gunParticles.Play();
-
-        gunLine.enabled = true;
-        gunLine.SetPosition(0, transform.position);
         if (shotgunBeingUsed)
         {
             gunLine.material.color = Color.red;
@@ -129,12 +120,59 @@ public class PlayerShooting : MonoBehaviour
         {
             gunLine.material.color = Color.yellow;
         }
+    }
+
+    float rangeSelect()
+    {
+        if (grenadeLauncherBeingUsed)
+        {
+            return rangeGrenade;
+        }
+        else if (shotgunBeingUsed)
+        {
+            return rangeShotGun;
+        }
+        else
+        {
+            return range;
+        }
+    }
+
+    void Shoot()
+    {
+        timer = 0f;
+
+        gunAudio.Play();
+
+        gunLight.enabled = true;
+
+        gunParticles.Stop();
+        gunParticles.Play();
+
+        gunLine.enabled = true;
+        gunLine.SetPosition(0, transform.position);
+
+        changeGunLineColour();
 
         shootRay.origin = transform.position;
         shootRay.direction = transform.forward;
 
-        if (Physics.Raycast(shootRay, out shootHit, range, shootableMask))
+        float tempRange = rangeSelect();
+
+        if (Physics.Raycast(shootRay, out shootHit, tempRange, shootableMask))
         {
+            if (grenadeLauncherBeingUsed)
+            {
+                //Code for explosive effects
+                explosiveEffects.transform.position = shootHit.transform.position;
+                explosiveEffects.GetComponent<ParticleSystem>().Play();
+            }
+            else if (shotgunBeingUsed)
+            {
+                shotgunEffects.transform.position = shootHit.transform.position;
+                shotgunEffects.GetComponent<ParticleSystem>().Play();
+            }
+
             EnemyHealth enemyHealth = shootHit.collider.GetComponent<EnemyHealth>();
 
             if (enemyHealth != null)
@@ -169,19 +207,21 @@ public class PlayerShooting : MonoBehaviour
             }
             gunLine.SetPosition(1, shootHit.point);
 
-            //Code for explosive effects
-            explosiveEffects.transform.position = shootRay.origin + shootRay.direction * rangeGrenade;
-            explosiveEffects.GetComponent<ParticleSystem>().Play();
         }
         else
         {
             if (grenadeLauncherBeingUsed)
             {
-
+                //Code for explosive effects
+                explosiveEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
+                explosiveEffects.GetComponent<ParticleSystem>().Play();
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeGrenade);
             }
             else if (shotgunBeingUsed)
             {
+                //Code for explosive effects
+                shotgunEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
+                shotgunEffects.GetComponent<ParticleSystem>().Play();
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeShotGun);
             }
             else
