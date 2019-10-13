@@ -9,6 +9,7 @@
   <li>Added frenemy attack script, it allows the players to turn enemies into friends and attack other enemies.</li>
   <li>Added frenemy movement script, allows frenemies to search for other enemies, and follow and attack them once found.</li>
   <li>Added extra weapons, it allows player to select extra weapons like grenade launcher and shotgun</li>
+  <li>Added the functionality to generate random spawn points.</li>
 </ul>
 
 <br><br>
