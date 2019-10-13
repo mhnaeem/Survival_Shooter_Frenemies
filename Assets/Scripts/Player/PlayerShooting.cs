@@ -173,15 +173,17 @@ public class PlayerShooting : MonoBehaviour
         //Shoot ray and see what collider it hits
         if (Physics.Raycast(shootRay, out shootHit, tempRange, shootableMask))
         {
-            // Play the effects based on what type of weapon is being used
+            // Play the effects based on what type of weapon is being used and play sound
             if (grenadeLauncherBeingUsed)
             {
                 explosiveEffects.transform.position = shootHit.transform.position;
-                explosiveEffects.GetComponent<ParticleSystem>().Play();
+                explosiveEffects.GetComponent<AudioSource>().Play();
+                explosiveEffects.GetComponent<ParticleSystem>().Play();   
             }
             else if (shotgunBeingUsed)
             {
                 shotgunEffects.transform.position = shootHit.transform.position;
+                shotgunEffects.GetComponent<AudioSource>().Play();
                 shotgunEffects.GetComponent<ParticleSystem>().Play();
             }
 
@@ -230,19 +232,21 @@ public class PlayerShooting : MonoBehaviour
         //If no colliders were hit by the raycast then
         else
         {
-            //Play the effects for each weapon and change the gunline distance
+            //Play the effects for each weapon, play sound and change the gunline distance
 
             if (grenadeLauncherBeingUsed)
             {
-                //Code for explosive effects
+                //Code for explosive effects and sound
                 explosiveEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
+                explosiveEffects.GetComponent<AudioSource>().Play();
                 explosiveEffects.GetComponent<ParticleSystem>().Play();
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeGrenade);
             }
             else if (shotgunBeingUsed)
             {
-                //Code for explosive effects
+                //Code for shotgun effects and sound
                 shotgunEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
+                shotgunEffects.GetComponent<AudioSource>().Play();
                 shotgunEffects.GetComponent<ParticleSystem>().Play();
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeShotGun);
             }
