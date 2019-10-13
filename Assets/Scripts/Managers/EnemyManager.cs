@@ -54,7 +54,7 @@ public class EnemyManager : MonoBehaviour
 
         EnemyManager newEnemyManager = enemyManagers[enemyManagers.Length - 1];
         newEnemyManager.spawnPoints = new Transform[1];
-        newEnemyManager.spawnPoints[0] = GameObject.Find("TestRandom").GetComponent<Transform>();
+        newEnemyManager.spawnPoints[0] = GameObject.Find("RandomSpawnPoint").GetComponent<Transform>();
 
         newEnemyManager.spawnPoints[0].position = new Vector3(Random.Range(-25, 26), 0, Random.Range(-25, 26));
         
