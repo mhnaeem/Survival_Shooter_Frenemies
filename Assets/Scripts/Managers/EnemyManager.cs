@@ -8,7 +8,7 @@ public class EnemyManager : MonoBehaviour
     public Transform[] spawnPoints;
 
     // Code by Muhammad Hammad
-    //This is a trigger that can be set to true anywhere in the program, once true it will change the random spawn point
+    //This is a trigger that can be set to true anywhere in the game, once true it will change the random spawn point
     static bool makeNewSpawnPoint = false;
     private float seconds = 20f;
     private float timer = 0f;
@@ -24,10 +24,9 @@ public class EnemyManager : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        // If the more than 20seconds have passed inbetween the last random location change and the score is divisible by 50 then
+        // If the more than 20 seconds have passed in between the last random location change and the score is divisible by 50 then execute
         if(timer >= seconds && ScoreManager.score != 0 && ScoreManager.score % 50 == 0)
         {
-            
             timer = 0;
             
             //Set the trigger to true
@@ -36,7 +35,7 @@ public class EnemyManager : MonoBehaviour
             //Play the alarm clock sound, indicating the change of spawn points
             gameObject.GetComponent<AudioSource>().Play();
 
-            //If there are more than 3 original spawn points then delete the last one
+            //If there are more than 3 original spawn points then delete the last one because there should only be a max of 4 spawn points at once
             if (GameObject.Find("EnemyManager").GetComponents<EnemyManager>().Length > 3)
             {
                 deleteRandomSpawnPoint();
@@ -64,16 +63,16 @@ public class EnemyManager : MonoBehaviour
     //Creates a new random spawn point
     public void makeNewRandomSpawnPoint()
     {
-        // Find the enemy manager object
+        // Find the enemy manager object from the game scene
         GameObject enemyManagerObject = GameObject.Find("EnemyManager");
 
-        // Add a new EnemyManager script to the object for a random spawnpoint
+        // Add a new EnemyManager component to the object for the creation of a random spawnpoint
         enemyManagerObject.AddComponent<EnemyManager>();
 
         // Array of all the EnemyManager components
         EnemyManager[] enemyManagers = enemyManagerObject.GetComponents<EnemyManager>();
 
-        // Get the last last EnemyManager script which is the new one just added
+        // Get the last EnemyManager component which is the new one just added
         EnemyManager newEnemyManager = enemyManagers[enemyManagers.Length - 1];
 
         // Initialize the spawn point position in the newly added random EnemyManager script

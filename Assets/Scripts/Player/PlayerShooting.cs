@@ -19,7 +19,6 @@ public class PlayerShooting : MonoBehaviour
     bool specialWeapon = false;         //Weapon for the frenemy
 
     //Code by Muhammad Hammad
-
     //Code for grenade launcher
     public static bool grenadeLauncher = false; //Switch to make grenade launcher available
     float timeBetweenBombs = 30f;
@@ -48,7 +47,7 @@ public class PlayerShooting : MonoBehaviour
         gunAudio = GetComponent<AudioSource>();
         gunLight = GetComponent<Light>();
 
-        // These are effects for shotgun and grenade launcher, modification of the hit particles
+        // These are effects for shotgun and grenade launcher, modification of the gun particles
         explosiveEffects = GameObject.Find("ExplParticle");
         shotgunEffects = GameObject.Find("ShotgunParticle");
     }
@@ -88,6 +87,7 @@ public class PlayerShooting : MonoBehaviour
             grenadeLauncherBeingUsed = false;
         }
 
+        //Old code from Dr. Edward Brown
         else if (Input.GetButton("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)
         {
             specialWeapon = Input.GetButton("Fire2");
@@ -170,7 +170,7 @@ public class PlayerShooting : MonoBehaviour
         //Select the correct range based on the weapon
         float tempRange = rangeSelect();
 
-        //Raycast and see what collider it hits
+        //Shoot ray and see what collider it hits
         if (Physics.Raycast(shootRay, out shootHit, tempRange, shootableMask))
         {
             // Play the effects based on what type of weapon is being used
@@ -188,7 +188,7 @@ public class PlayerShooting : MonoBehaviour
             // Get the EnemyHealth script from the collider that is hit
             EnemyHealth enemyHealth = shootHit.collider.GetComponent<EnemyHealth>();
 
-            //If an enemy was hit then proceed otherwise go to else
+            //If an enemy was hit then proceed otherwise go to else part
             if (enemyHealth != null)
             {
                 if (grenadeLauncherBeingUsed || shotgunBeingUsed)
@@ -212,6 +212,8 @@ public class PlayerShooting : MonoBehaviour
                         }
                     }
                 }
+
+                //Old code by Dr. Edward Brown
                 else if (specialWeapon)
                 {
                     enemyHealth.Convert();
