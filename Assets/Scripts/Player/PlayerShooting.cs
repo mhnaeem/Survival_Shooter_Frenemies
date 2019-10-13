@@ -101,7 +101,7 @@ public class PlayerShooting : MonoBehaviour
         }
     }
 
-
+    //Old code by Dr. Edward Brown
     public void DisableEffects()
     {
         gunLine.enabled = false;

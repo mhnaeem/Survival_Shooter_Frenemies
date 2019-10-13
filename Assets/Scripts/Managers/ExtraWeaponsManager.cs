@@ -2,6 +2,7 @@
 
 public class ExtraWeaponsManager : MonoBehaviour
 {
+    // Code by Muhammad Hammad
     public bool grenadeIconOn;
     public bool shotgunIconOn;
 
@@ -18,6 +19,7 @@ public class ExtraWeaponsManager : MonoBehaviour
         grenadeIconOn = PlayerShooting.grenadeLauncher;
         shotgunIconOn = PlayerShooting.shotgun;
         
+        // Depending on what type of weapon is avaible for use make their icons visible or invisible.
         if (grenadeIconOn && this.name == "Bomb")
         {
             this.GetComponent<CanvasRenderer>().SetAlpha(255f);
