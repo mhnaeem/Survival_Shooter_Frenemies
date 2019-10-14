@@ -21,9 +21,10 @@ public class PlayerShooting : MonoBehaviour
     //Code by Muhammad Hammad
     //Code for grenade launcher
     public static bool grenadeLauncher = false; //Switch to make grenade launcher available
-    float timeBetweenBombs = 30f;
+    float timeBetweenBombs = 20f;
     float rangeGrenade = 8f;
     int damagePerBomb = 50;
+    float grenadeTimer = 0f;                    //This is used to determine the time between when the grenade launcher was last available
     bool grenadeLauncherBeingUsed = false;      //Trigger to identify whether the grenade launcher is being used
 
     //Code for shotgun
@@ -31,6 +32,7 @@ public class PlayerShooting : MonoBehaviour
     float timeBetweenShotGun = 10f;
     float rangeShotGun = 3f;
     int damagePerShotGun = 35;
+    float shotgunTimer = 0f;            //This is used to determine the time between when the shotgun was last available
     bool shotgunBeingUsed = false;    //Trigger to identify whether the shotgun is being used
 
 
@@ -56,16 +58,20 @@ public class PlayerShooting : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
+        shotgunTimer += Time.deltaTime;
+        grenadeTimer += Time.deltaTime;
 
         // If the score is divisible by 50 and time between bombs has passed then make grenade launcher available
-        if(ScoreManager.score % 50 == 0 && timer >= timeBetweenBombs && Time.timeScale != 0 && ScoreManager.score != 0)
+        if(ScoreManager.score % 50 == 0 && grenadeTimer >= timeBetweenBombs && Time.timeScale != 0 && ScoreManager.score != 0)
         {
             grenadeLauncher = true;
+            grenadeTimer = 0f;
         }
 
         // If the score is divisible by 20 and time between shotgun has passed then make shotgun available
-        if (timer >= timeBetweenShotGun && Time.timeScale != 0 && ScoreManager.score != 0 && ScoreManager.score % 20 == 0)
+        if (shotgunTimer >= timeBetweenShotGun && Time.timeScale != 0 && ScoreManager.score != 0 && ScoreManager.score % 20 == 0)
         {
+            shotgunTimer = 0f;
             shotgun = true;
         }
 
@@ -146,6 +152,54 @@ public class PlayerShooting : MonoBehaviour
         }
     }
 
+    //Deals damage in a radius from the given position
+    void dealDamageInRadius(Vector3 position)
+    {
+        if (shotgunBeingUsed)
+        {
+            //Get all the colliders in the radius of 5f
+            foreach (Collider i in Physics.OverlapSphere(position, 5f))
+            {
+                //If the collider is an enemy then deal damage
+                if (i.GetComponent<EnemyHealth>() != null)
+                {
+                    i.GetComponent<EnemyHealth>().TakeDamage(damagePerShotGun, i.transform.position);
+                }
+            }
+        }
+        else if (grenadeLauncherBeingUsed)
+        {
+            //Get all the colliders in the radius of 10f
+            foreach (Collider i in Physics.OverlapSphere(position, 10f))
+            {
+                //If the collider is an enemy then deal damage
+                if (i.GetComponent<EnemyHealth>() != null)
+                {
+                    i.GetComponent<EnemyHealth>().TakeDamage(damagePerBomb, i.transform.position);
+                }
+            }
+        }
+    }
+
+    //Plays the appropriate effects for a grenade and shotgun given the position where the effects must be played
+    void playEffects(Vector3 position)
+    {
+        if (grenadeLauncherBeingUsed)
+        {
+            //Code for explosive effects and sound
+            explosiveEffects.transform.position = position;
+            explosiveEffects.GetComponent<AudioSource>().Play();
+            explosiveEffects.GetComponent<ParticleSystem>().Play();
+        }
+        else if (shotgunBeingUsed)
+        {
+            //Code for shotgun effects and sound
+            shotgunEffects.transform.position = position;
+            shotgunEffects.GetComponent<AudioSource>().Play();
+            shotgunEffects.GetComponent<ParticleSystem>().Play();
+        }
+    }
+
     // Edited by Muhammad Hammad, some of it is from the original survival shooter game
     void Shoot()
     {
@@ -174,49 +228,19 @@ public class PlayerShooting : MonoBehaviour
         if (Physics.Raycast(shootRay, out shootHit, tempRange, shootableMask))
         {
             // Play the effects based on what type of weapon is being used and play sound
-            if (grenadeLauncherBeingUsed)
-            {
-                explosiveEffects.transform.position = shootHit.transform.position;
-                explosiveEffects.GetComponent<AudioSource>().Play();
-                explosiveEffects.GetComponent<ParticleSystem>().Play();   
-            }
-            else if (shotgunBeingUsed)
-            {
-                shotgunEffects.transform.position = shootHit.transform.position;
-                shotgunEffects.GetComponent<AudioSource>().Play();
-                shotgunEffects.GetComponent<ParticleSystem>().Play();
-            }
+            playEffects(shootHit.transform.position);
 
             // Get the EnemyHealth script from the collider that is hit
             EnemyHealth enemyHealth = shootHit.collider.GetComponent<EnemyHealth>();
 
-            //If an enemy was hit then proceed otherwise go to else part
+            //If an enemy was hit then proceed
             if (enemyHealth != null)
             {
-                if (grenadeLauncherBeingUsed || shotgunBeingUsed)
-                {
-                    Vector3 enemyHitPos = enemyHealth.transform.position;
-
-                    //Get all the colliders in the radius of 5f
-                    foreach (Collider i in Physics.OverlapSphere(enemyHitPos, 5f))
-                    {
-                        //If the collider is an enemy then deal damage depending on what weapon was used.
-                        if (i.GetComponent<EnemyHealth>() != null)
-                        {
-                            if (grenadeLauncherBeingUsed)
-                            {
-                                i.GetComponent<EnemyHealth>().TakeDamage(damagePerBomb, i.transform.position);
-                            }
-                            else if (shotgunBeingUsed)
-                            {
-                                i.GetComponent<EnemyHealth>().TakeDamage(damagePerShotGun, i.transform.position);
-                            }
-                        }
-                    }
-                }
+                //Deal damage in a radius depending on the type of weapon used
+                dealDamageInRadius(enemyHealth.transform.position);
 
                 //Old code by Dr. Edward Brown
-                else if (specialWeapon)
+                if (specialWeapon)
                 {
                     enemyHealth.Convert();
                 }
@@ -232,22 +256,21 @@ public class PlayerShooting : MonoBehaviour
         //If no colliders were hit by the raycast then
         else
         {
-            //Play the effects for each weapon, play sound and change the gunline distance
-
+            //Play the effects for each weapon, change the gunline distance and also deal damage within a radius if enemies were close by
             if (grenadeLauncherBeingUsed)
             {
+                dealDamageInRadius(shootRay.origin + shootRay.direction * tempRange);
+                
                 //Code for explosive effects and sound
-                explosiveEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
-                explosiveEffects.GetComponent<AudioSource>().Play();
-                explosiveEffects.GetComponent<ParticleSystem>().Play();
+                playEffects(shootRay.origin + shootRay.direction * tempRange);
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeGrenade);
             }
             else if (shotgunBeingUsed)
             {
+                dealDamageInRadius(shootRay.origin + shootRay.direction * tempRange);
+                
                 //Code for shotgun effects and sound
-                shotgunEffects.transform.position = shootRay.origin + shootRay.direction * tempRange;
-                shotgunEffects.GetComponent<AudioSource>().Play();
-                shotgunEffects.GetComponent<ParticleSystem>().Play();
+                playEffects(shootRay.origin + shootRay.direction * tempRange);
                 gunLine.SetPosition(1, shootRay.origin + shootRay.direction * rangeShotGun);
             }
             else
