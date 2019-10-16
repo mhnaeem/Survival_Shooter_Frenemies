@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Written by RonakBParmar Std.No 201707866
+
 public class PopUpManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    //public static int health;
+    
+    /*We initialize the variables/ object variables. GameObject healthPopup refers to the actual 
+       popup text for health warning in HUD canvas */
     public GameObject healthPopup;
     public float start, end;
     public Color noAplha;
