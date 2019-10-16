@@ -22,6 +22,7 @@
   <li>Shotgun icon made by <a href="https://www.flaticon.com/authors/nikita-golubev" title="Nikita Golubev">Nikita Golubev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></li>
   <li>Game UX design principles by Celia Hodent from her book <a href="https://celiahodent.com/the-gamers-brain/">The Gamer's Brain</a></li>
   <li>Alarm sound effects obtained from <a href="http://soundbible.com/2061-Loud-Alarm-Clock-Buzzer.html">SoundBible.com</a></li>
-  <li>Grenade Launcher and Shotgun sound effects ontained from <a href="https://www.freesoundeffects.com/free-sounds/explosion-10070/">freesoundeffects.com</a></li>
+  <li>Grenade Launcher and Shotgun sound effects ontained from <a href="https://www.freesoundeffects.com/free-sounds/explosion-10070/">freesoundeffects.com</a></li>\
+  <li>Popup Manager and Tutorial Manager designed and written by <a href="www.github.com/RonakBParmar"></a></li>
 </ul>
 
